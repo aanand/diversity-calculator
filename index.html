@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Conference Diversity Distribution Calculator</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="css/calculator.css" />
+  </head>
+
+  <body>
+    <div class="container">
+			<h1 class="page-title">Conference Diversity Distribution Calculator</h1>
+
+			<div class="inputs">
+				How many <input type="text" name="groupName" value="women" />
+				would you expect in an unbiased speaker selection of <input type="number" name="numSpeakers" min="1" value="20" />
+				assuming they represent <input type="number" name="populationPercentage" min="0" max="100" value="10" step="any" />%
+				of the population?
+			</div>
+
+      <div class="chart"></div>
+		</div>
+
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/calculator.js"></script>
+  </body>
+</html>
+

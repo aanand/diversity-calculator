@@ -1,0 +1,9 @@
+.bar rect {
+  stroke: white;
+  fill: green;
+}
+
+.bar text {
+  text-anchor: middle;
+}
+
