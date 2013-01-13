@@ -1,3 +1,7 @@
+.lead {
+  font-size: 19px;
+}
+
 .input-tiny {
   width: 35px;
 }
@@ -31,3 +35,6 @@
   text-anchor: middle;
 }
 
+.probability {
+  font-weight: bold;
+}
