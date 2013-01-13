@@ -14,15 +14,15 @@
 }
 
 .bar rect {
-  fill: #8d8;
+  fill: #4cb04c;
 }
 
 .bar.under-representation rect {
-  fill: #faa;
+  fill: #ad494a;
 }
 
 .bar.over-representation rect {
-  fill: #aaf;
+  fill: #5254a3;
 }
 
 .bar text {
