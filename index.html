@@ -10,17 +10,22 @@
 
   <body>
     <div class="container">
-			<h1 class="page-title">Conference Diversity Distribution Calculator</h1>
+      <h1 class="page-header">Conference Diversity Distribution Calculator</h1>
 
-			<div class="inputs">
-				How many <input type="text" name="groupName" value="women" />
-				would you expect in an unbiased speaker selection of <input type="number" name="numSpeakers" min="1" value="20" />
-				assuming they represent <input type="number" name="populationPercentage" min="0" max="100" value="10" step="any" />%
-				of the population?
-			</div>
+      <div class="inputs form-inline">
+        <p class="lead">
+        How many
+        <input type="text" name="groupName" value="women" class="input-mini" />
+        would you expect in an unbiased selection of
+        <input type="number" name="numSpeakers" min="1" value="20" required="required" class="input-tiny" />
+        people, assuming they represent
+        <input type="number" name="populationPercentage" min="0" max="100" value="10" step="any" required="required" class="input-tiny" />%
+        of the population?
+        </p>
+      </div>
 
       <div class="chart"></div>
-		</div>
+    </div>
 
     <script src="js/d3.v3.min.js"></script>
     <script src="js/calculator.js"></script>

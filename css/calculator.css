@@ -1,9 +1,33 @@
+.input-tiny {
+  width: 35px;
+}
+
+.chart {
+  height: 200px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
 .bar rect {
-  stroke: white;
-  fill: green;
+  fill: #8d8;
+}
+
+.bar.under-representation rect {
+  fill: #faa;
+}
+
+.bar.over-representation rect {
+  fill: #aaf;
 }
 
 .bar text {
+  font-size: 11px;
+  fill: #666;
   text-anchor: middle;
 }
 

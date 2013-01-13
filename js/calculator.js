@@ -1,36 +1,95 @@
-var numSpeakers = document.querySelector("input[name=numSpeakers]").valueAsNumber;
-var populationPercentage = document.querySelector("input[name=populationPercentage]").valueAsNumber;
-var data = poisson(numSpeakers, populationPercentage/100);
+var numSpeakers = document.querySelector("input[name=numSpeakers]");
+var populationPercentage = document.querySelector("input[name=populationPercentage]");
+var chart = d3.select(".chart");
 
-drawChart(data, d3.select(".chart").append("svg"), 420, 200);
+var expectedNumber = null;
+var data = null;
 
-function drawChart(data, svg, width, height) {
+numSpeakers.addEventListener("change", recalculate, false);
+numSpeakers.addEventListener("keydown", recalculate, false);
+populationPercentage.addEventListener("change", recalculate, false);
+populationPercentage.addEventListener("keydown", recalculate, false);
+window.addEventListener("resize", redraw, false);
+recalculate();
+
+function recalculate() {
+  window.setTimeout(function() {
+    if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
+      return;
+
+    var populationFraction = populationPercentage.valueAsNumber/100;
+
+    expectedNumber = numSpeakers.valueAsNumber * populationFraction;
+    data = poisson(numSpeakers.valueAsNumber, populationFraction);
+
+    redraw();
+  }, 0);
+}
+
+function redraw() {
+  chart.node().innerHTML = '';
+  drawChart(data, expectedNumber, chart);
+}
+
+function drawChart(data, expectedNumber, chart) {
+  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+      width = chart.node().offsetWidth - margin.left - margin.right,
+      height = chart.node().offsetHeight - margin.top - margin.bottom;
+
   var barWidth = width / data.length;
-  var barHeight = height * 0.9;
 
-	var chart = svg.attr("width", width)
-			           .attr("height", height);
+  var svg = chart.append("svg")
+     .attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.top + margin.bottom)
+   .append("g")
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1);
 
   var y = d3.scale.linear()
             .domain([0, d3.max(data)])
-            .range([0, barHeight]);
+            .range([height, 0]);
 
-  var bar = chart.selectAll(".bar")
-       .data(data)
-     .enter().append("g")
-       .attr("class", "bar")
-			 .attr("transform", function(d, i) { return "translate(" + (i * barWidth) + ")"  });
+  var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
 
-  bar.append("rect")
-     .attr("x", 0)
-     .attr("y", function(d) { return barHeight - y(d) })
-     .attr("width", barWidth)
-     .attr("height", y);
+  var yAxis = d3.svg.axis()
+                .scale(y)
+                .ticks(2)
+                .orient("left");
 
-  bar.append("text")
-     .attr("x", barWidth/2)
-     .attr("y", height)
-     .text(function(d, i) { return i });
+  x.domain(data.map(function(d, i) { return i }));
+
+  svg.append("g")
+     .attr("class", "x axis")
+     .attr("transform", "translate(0," + height + ")")
+     .call(xAxis);
+
+  svg.append("g")
+     .attr("class", "y axis")
+     .call(yAxis);
+
+  var bar = svg.selectAll(".bar").data(data)
+
+  var g = bar.enter().append("g");
+  g.append("rect");
+  g.append("text");
+
+  bar.exit().remove();
+
+  bar.attr("class", function(d, i) {
+       if (i < expectedNumber) return "bar under-representation";
+       if (i > expectedNumber) return "bar over-representation";
+       return "bar";
+     });
+
+  bar.select("rect")
+     .attr("x", function(d, i) { return x(i) })
+     .attr("y", y)
+     .attr("width", x.rangeBand())
+     .attr("height", function(d) { return height - y(d) });
 }
 
 function poisson(n, p) {
