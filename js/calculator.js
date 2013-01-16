@@ -132,9 +132,11 @@ function renderChart(data, expectedNumber, chart) {
 
   var bar = svg.selectAll(".bar").data(data)
 
-  var g = bar.enter().append("g");
-  g.append("rect");
-  g.append("text");
+  bar.enter()
+    .append("g")
+    .append("rect")
+      .attr("y", dim.height)
+      .attr("height", 0);
 
   bar.exit().remove();
 
@@ -146,8 +148,9 @@ function renderChart(data, expectedNumber, chart) {
 
   bar.select("rect")
      .attr("x", function(d, i) { return x(i) })
-     .attr("y", y)
      .attr("width", x.rangeBand())
+   .transition()
+     .attr("y", y)
      .attr("height", function(d) { return dim.height - y(d) });
 }
 
