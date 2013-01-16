@@ -46,7 +46,6 @@ function initCalculator(options) {
   }
 
   function redraw() {
-    chart.innerHTML = '';
     renderChart(data, expectedNumber, chart);
   }
 
@@ -70,25 +69,46 @@ function zeroTimeout(callback) {
   }
 }
 
+function getDimensions(chart) {
+  var margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+  return {
+    margin: margin,
+    width: chart.offsetWidth - margin.left - margin.right,
+    height: chart.offsetHeight - margin.top - margin.bottom
+  };
+}
+
+function initSVG(chart) {
+  var dim = getDimensions(chart);
+  var svg = d3.select(chart).select("svg > g");
+
+  if (svg.empty()) {
+    svg = d3.select(chart).append("svg")
+     .append("g")
+       .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
+  }
+
+  svg.append("g")
+     .attr("class", "x axis")
+     .attr("transform", "translate(0," + dim.height + ")")
+
+  svg.append("g")
+     .attr("class", "y axis")
+
+  return svg;
+}
+
 function renderChart(data, expectedNumber, chart) {
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
-      width = chart.offsetWidth - margin.left - margin.right,
-      height = chart.offsetHeight - margin.top - margin.bottom;
-
-  var barWidth = width / data.length;
-
-  var svg = d3.select(chart).append("svg")
-     .attr("width", width + margin.left + margin.right)
-     .attr("height", height + margin.top + margin.bottom)
-   .append("g")
-     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var dim = getDimensions(chart);
+  var barWidth = dim.width / data.length;
 
   var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1);
+            .rangeRoundBands([0, dim.width], .1);
 
   var y = d3.scale.linear()
             .domain([0, d3.max(data)])
-            .range([height, 0]);
+            .range([dim.height, 0]);
 
   var xAxis = d3.svg.axis()
                 .scale(x)
@@ -101,14 +121,13 @@ function renderChart(data, expectedNumber, chart) {
 
   x.domain(data.map(function(d, i) { return i }));
 
-  svg.append("g")
-     .attr("class", "x axis")
-     .attr("transform", "translate(0," + height + ")")
-     .call(xAxis);
+  var svg = initSVG(chart);
 
-  svg.append("g")
-     .attr("class", "y axis")
-     .call(yAxis);
+  svg.attr("width",  dim.width + dim.margin.left + dim.margin.right)
+     .attr("height", dim.height + dim.margin.top + dim.margin.bottom);
+
+  svg.select(".x.axis").call(xAxis);
+  svg.select(".y.axis").call(yAxis);
 
   var bar = svg.selectAll(".bar").data(data)
 
@@ -128,7 +147,7 @@ function renderChart(data, expectedNumber, chart) {
      .attr("x", function(d, i) { return x(i) })
      .attr("y", y)
      .attr("width", x.rangeBand())
-     .attr("height", function(d) { return height - y(d) });
+     .attr("height", function(d) { return dim.height - y(d) });
 }
 
 function getNotesTemplateData(data, expectedNumber) {
