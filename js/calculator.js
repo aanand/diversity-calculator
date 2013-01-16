@@ -2,7 +2,8 @@ window.calculator = initCalculator({
   groupName:            document.querySelector("input[name=groupName]"),
   numSpeakers:          document.querySelector("input[name=numSpeakers]"),
   populationPercentage: document.querySelector("input[name=populationPercentage]"),
-  chart:                document.querySelector(".chart")
+  chart:                document.querySelector(".chart"),
+  notes:                document.querySelector(".notes")
 });
 
 function initCalculator(options) {
@@ -10,6 +11,7 @@ function initCalculator(options) {
   var numSpeakers = options.numSpeakers;
   var populationPercentage = options.populationPercentage;
   var chart = options.chart;
+  var notes = options.notes;
   var expectedNumber = options.expectedNumber = null;
   var data = options.data = null;
 
@@ -64,7 +66,7 @@ function initCalculator(options) {
       html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
     }
 
-    document.querySelector(".notes").innerHTML = html;
+    notes.innerHTML = html;
 
     function toPercentage(p) {
       return (p * 100).toPrecision(2);
