@@ -14,6 +14,7 @@ function initCalculator(options) {
   var notes = options.notes;
   var expectedNumber = options.expectedNumber = null;
   var data = options.data = null;
+  var notesTemplate = Handlebars.compile(document.getElementById("template-notes").innerHTML);
 
   setupEvents();
   recalculate();
@@ -49,8 +50,9 @@ function initCalculator(options) {
   }
 
   function updateNotes() {
-    notes.innerHTML = '';
-    renderNotes(data, expectedNumber, groupName, notes);
+    var templateData = getNotesTemplateData(data, expectedNumber);
+    templateData.groupName = groupName.value;
+    notes.innerHTML = notesTemplate(templateData);
   }
 }
 
@@ -121,25 +123,21 @@ function renderChart(data, expectedNumber, chart) {
      .attr("height", function(d) { return height - y(d) });
 }
 
-function renderNotes(data, expectedNumber, groupName, notes) {
-  var html = "<p>This selection has:</p><ul>";
+function getNotesTemplateData(data, expectedNumber) {
+  var over       = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+  var under      = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+  var none       = data[0];
 
-  var overRepresentationProbability = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-  var underRepresentationProbability = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-  var noRepresentationProbability = data[0];
+  var showOverVsNone = (none > 0) && (over > 0);
+  var overVsNone     = showOverVsNone && (over/none).toPrecision(2);
 
-  html += "<li>a <span class='probability'>" + toPercentage(overRepresentationProbability) + "%</span> chance of over-representing " + groupName.value + "</li>";
-  html += "<li>a <span class='probability'>" + toPercentage(underRepresentationProbability) + "%</span> chance of under-representing " + groupName.value + "</li>";
-  html += "<li>a <span class='probability'>" + toPercentage(noRepresentationProbability) + "%</span> chance of not representing " + groupName.value + " at all</li>";
-
-  html += "</ul>";
-
-  if (noRepresentationProbability > 0 && overRepresentationProbability > 0) {
-    var overVersusNone = (overRepresentationProbability/noRepresentationProbability).toPrecision(2);
-    html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
-  }
-
-  notes.innerHTML = html;
+  return {
+    overPercentage:  toPercentage(over),
+    underPercentage: toPercentage(under),
+    nonePercentage:  toPercentage(none),
+    showOverVsNone:  showOverVsNone,
+    overVsNone:      overVsNone
+  };
 
   function toPercentage(p) {
     return (p * 100).toPrecision(2);

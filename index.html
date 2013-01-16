@@ -29,7 +29,22 @@
       <div class="notes"></div>
     </div>
 
+    <script type="text/x-handlebars-template" id="template-notes">
+      <p>This selection has:<p>
+
+      <ul>
+        <li>a <span class='probability'>{{overPercentage}}%</span> chance of over-representing {{groupName}}</li>
+        <li>a <span class='probability'>{{underPercentage}}%</span> chance of under-representing {{groupName}}</li>
+        <li>a <span class='probability'>{{nonePercentage}}%</span> chance of not representing {{groupName}} at all</li>
+      </ul>
+
+      {{#showOverVsNone}}
+        <p>Over-representation is therefore about <span class='probability'>{{overVsNone}} times</span> as likely as no representation.</p>
+      {{/showOverVsNone}}
+    </script>
+
     <script src="js/d3.v3.min.js"></script>
+    <script src="js/handlebars.js"></script>
     <script src="js/calculator.js"></script>
   </body>
 </html>
