@@ -49,28 +49,8 @@ function initCalculator(options) {
   }
 
   function updateNotes() {
-    var html = "<p>This selection has:</p><ul>";
-
-    var overRepresentationProbability = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-    var underRepresentationProbability = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-    var noRepresentationProbability = data[0];
-
-    html += "<li>a <span class='probability'>" + toPercentage(overRepresentationProbability) + "%</span> chance of over-representing " + groupName.value + "</li>";
-    html += "<li>a <span class='probability'>" + toPercentage(underRepresentationProbability) + "%</span> chance of under-representing " + groupName.value + "</li>";
-    html += "<li>a <span class='probability'>" + toPercentage(noRepresentationProbability) + "%</span> chance of not representing " + groupName.value + " at all</li>";
-
-    html += "</ul>";
-
-    if (noRepresentationProbability > 0 && overRepresentationProbability > 0) {
-      var overVersusNone = (overRepresentationProbability/noRepresentationProbability).toPrecision(2);
-      html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
-    }
-
-    notes.innerHTML = html;
-
-    function toPercentage(p) {
-      return (p * 100).toPrecision(2);
-    }
+    notes.innerHTML = '';
+    renderNotes(data, expectedNumber, groupName, notes);
   }
 }
 
@@ -139,6 +119,31 @@ function drawChart(data, expectedNumber, chart) {
      .attr("y", y)
      .attr("width", x.rangeBand())
      .attr("height", function(d) { return height - y(d) });
+}
+
+function renderNotes(data, expectedNumber, groupName, notes) {
+  var html = "<p>This selection has:</p><ul>";
+
+  var overRepresentationProbability = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+  var underRepresentationProbability = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+  var noRepresentationProbability = data[0];
+
+  html += "<li>a <span class='probability'>" + toPercentage(overRepresentationProbability) + "%</span> chance of over-representing " + groupName.value + "</li>";
+  html += "<li>a <span class='probability'>" + toPercentage(underRepresentationProbability) + "%</span> chance of under-representing " + groupName.value + "</li>";
+  html += "<li>a <span class='probability'>" + toPercentage(noRepresentationProbability) + "%</span> chance of not representing " + groupName.value + " at all</li>";
+
+  html += "</ul>";
+
+  if (noRepresentationProbability > 0 && overRepresentationProbability > 0) {
+    var overVersusNone = (overRepresentationProbability/noRepresentationProbability).toPrecision(2);
+    html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
+  }
+
+  notes.innerHTML = html;
+
+  function toPercentage(p) {
+    return (p * 100).toPrecision(2);
+  }
 }
 
 function poisson(n, p) {
