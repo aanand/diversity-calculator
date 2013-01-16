@@ -84,17 +84,18 @@ function initSVG(chart) {
   var svg = d3.select(chart).select("svg > g");
 
   if (svg.empty()) {
-    svg = d3.select(chart).append("svg")
-     .append("g")
-       .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
+    svg = d3.select(chart)
+            .append("svg")
+            .append("g")
+            .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
+
+    svg.append("g")
+       .attr("class", "x axis")
+       .attr("transform", "translate(0," + dim.height + ")")
+
+    svg.append("g")
+       .attr("class", "y axis")
   }
-
-  svg.append("g")
-     .attr("class", "x axis")
-     .attr("transform", "translate(0," + dim.height + ")")
-
-  svg.append("g")
-     .attr("class", "y axis")
 
   return svg;
 }
