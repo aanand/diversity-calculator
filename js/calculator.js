@@ -15,6 +15,7 @@ function initCalculator(options) {
   var expectedNumber = options.expectedNumber = null;
   var data = options.data = null;
   var notesTemplate = Handlebars.compile(document.getElementById("template-notes").innerHTML);
+  var chartWidth = chart.offsetWidth;
 
   setupEvents();
   recalculate();
@@ -28,7 +29,7 @@ function initCalculator(options) {
     numSpeakers.addEventListener("keydown", zeroTimeout(recalculate), false);
     populationPercentage.addEventListener("change", recalculate, false);
     populationPercentage.addEventListener("keydown", zeroTimeout(recalculate), false);
-    window.addEventListener("resize", redraw, false);
+    window.addEventListener("resize", resize, false);
   }
 
   function recalculate() {
@@ -47,6 +48,13 @@ function initCalculator(options) {
   function redraw() {
     chart.innerHTML = '';
     renderChart(data, expectedNumber, chart);
+  }
+
+  function resize() {
+    if (chart.offsetWidth !== chartWidth) {
+      chartWidth = chart.offsetWidth;
+      redraw();
+    }
   }
 
   function updateNotes() {
