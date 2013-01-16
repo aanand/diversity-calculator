@@ -172,7 +172,7 @@ function getNotesTemplateData(data, expectedNumber) {
   var none       = data[0];
 
   var showOverVsNone = (none > 0) && (over > 0);
-  var overVsNone     = showOverVsNone && (over/none).toPrecision(2);
+  var overVsNone     = showOverVsNone && Math.round(over/none);
 
   return {
     overPercentage:  toPercentage(over),
@@ -183,7 +183,8 @@ function getNotesTemplateData(data, expectedNumber) {
   };
 
   function toPercentage(p) {
-    return (p * 100).toPrecision(2);
+    var percentage = (p * 100);
+    return (p >= 0.01) ? percentage.toPrecision(2) : "<0.01";
   }
 }
 
