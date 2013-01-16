@@ -1,19 +1,76 @@
-var groupName = document.querySelector("input[name=groupName]");
-var numSpeakers = document.querySelector("input[name=numSpeakers]");
-var populationPercentage = document.querySelector("input[name=populationPercentage]");
-var chart = d3.select(".chart");
+window.calculator = initCalculator({
+  groupName:            document.querySelector("input[name=groupName]"),
+  numSpeakers:          document.querySelector("input[name=numSpeakers]"),
+  populationPercentage: document.querySelector("input[name=populationPercentage]"),
+  chart:                document.querySelector(".chart")
+});
 
-var expectedNumber = null;
-var data = null;
+function initCalculator(options) {
+  var groupName = options.groupName;
+  var numSpeakers = options.numSpeakers;
+  var populationPercentage = options.populationPercentage;
+  var chart = options.chart;
+  var expectedNumber = options.expectedNumber = null;
+  var data = options.data = null;
 
-groupName.addEventListener("change", updateNotes, false);
-groupName.addEventListener("keydown", zeroTimeout(updateNotes), false);
-numSpeakers.addEventListener("change", recalculate, false);
-numSpeakers.addEventListener("keydown", zeroTimeout(recalculate), false);
-populationPercentage.addEventListener("change", recalculate, false);
-populationPercentage.addEventListener("keydown", zeroTimeout(recalculate), false);
-window.addEventListener("resize", redraw, false);
-recalculate();
+  setupEvents();
+  recalculate();
+
+  return options;
+
+  function setupEvents() {
+    groupName.addEventListener("change", updateNotes, false);
+    groupName.addEventListener("keydown", zeroTimeout(updateNotes), false);
+    numSpeakers.addEventListener("change", recalculate, false);
+    numSpeakers.addEventListener("keydown", zeroTimeout(recalculate), false);
+    populationPercentage.addEventListener("change", recalculate, false);
+    populationPercentage.addEventListener("keydown", zeroTimeout(recalculate), false);
+    window.addEventListener("resize", redraw, false);
+  }
+
+  function recalculate() {
+    if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
+      return;
+
+    var populationFraction = populationPercentage.valueAsNumber/100;
+
+    expectedNumber = numSpeakers.valueAsNumber * populationFraction;
+    data = poisson(numSpeakers.valueAsNumber, populationFraction);
+
+    redraw();
+    updateNotes();
+  }
+
+  function redraw() {
+    chart.innerHTML = '';
+    drawChart(data, expectedNumber, chart);
+  }
+
+  function updateNotes() {
+    var html = "<p>This selection has:</p><ul>";
+
+    var overRepresentationProbability = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+    var underRepresentationProbability = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+    var noRepresentationProbability = data[0];
+
+    html += "<li>a <span class='probability'>" + toPercentage(overRepresentationProbability) + "%</span> chance of over-representing " + groupName.value + "</li>";
+    html += "<li>a <span class='probability'>" + toPercentage(underRepresentationProbability) + "%</span> chance of under-representing " + groupName.value + "</li>";
+    html += "<li>a <span class='probability'>" + toPercentage(noRepresentationProbability) + "%</span> chance of not representing " + groupName.value + " at all</li>";
+
+    html += "</ul>";
+
+    if (noRepresentationProbability > 0 && overRepresentationProbability > 0) {
+      var overVersusNone = (overRepresentationProbability/noRepresentationProbability).toPrecision(2);
+      html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
+    }
+
+    document.querySelector(".notes").innerHTML = html;
+
+    function toPercentage(p) {
+      return (p * 100).toPrecision(2);
+    }
+  }
+}
 
 function zeroTimeout(callback) {
   return function() {
@@ -21,57 +78,14 @@ function zeroTimeout(callback) {
   }
 }
 
-function recalculate() {
-  if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
-    return;
-
-  var populationFraction = populationPercentage.valueAsNumber/100;
-
-  expectedNumber = numSpeakers.valueAsNumber * populationFraction;
-  data = poisson(numSpeakers.valueAsNumber, populationFraction);
-
-  redraw();
-  updateNotes();
-}
-
-function redraw() {
-  chart.node().innerHTML = '';
-  drawChart(data, expectedNumber, chart);
-}
-
-function updateNotes() {
-  var html = "<p>This selection has:</p><ul>";
-
-  var overRepresentationProbability = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-  var underRepresentationProbability = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
-  var noRepresentationProbability = data[0];
-
-  html += "<li>a <span class='probability'>" + toPercentage(overRepresentationProbability) + "%</span> chance of over-representing " + groupName.value + "</li>";
-  html += "<li>a <span class='probability'>" + toPercentage(underRepresentationProbability) + "%</span> chance of under-representing " + groupName.value + "</li>";
-  html += "<li>a <span class='probability'>" + toPercentage(noRepresentationProbability) + "%</span> chance of not representing " + groupName.value + " at all</li>";
-
-  html += "</ul>";
-
-  if (noRepresentationProbability > 0 && overRepresentationProbability > 0) {
-    var overVersusNone = (overRepresentationProbability/noRepresentationProbability).toPrecision(2);
-    html += "<p>Over-representation is therefore about <span class='probability'>" + overVersusNone + " times</span> as likely as no representation.";
-  }
-
-  document.querySelector(".notes").innerHTML = html;
-
-  function toPercentage(p) {
-    return (p * 100).toPrecision(2);
-  }
-}
-
 function drawChart(data, expectedNumber, chart) {
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
-      width = chart.node().offsetWidth - margin.left - margin.right,
-      height = chart.node().offsetHeight - margin.top - margin.bottom;
+      width = chart.offsetWidth - margin.left - margin.right,
+      height = chart.offsetHeight - margin.top - margin.bottom;
 
   var barWidth = width / data.length;
 
-  var svg = chart.append("svg")
+  var svg = d3.select(chart).append("svg")
      .attr("width", width + margin.left + margin.right)
      .attr("height", height + margin.top + margin.bottom)
    .append("g")
