@@ -104,11 +104,12 @@ function renderChart(data, expectedNumber, chart) {
   var barWidth = dim.width / data.length;
 
   var x = d3.scale.ordinal()
+            .domain(data.map(function(d, i) { return i }))
             .rangeRoundBands([0, dim.width], .1);
 
   var y = d3.scale.linear()
             .domain([0, d3.max(data)])
-            .range([dim.height, 0]);
+            .rangeRound([dim.height, 0]);
 
   var xAxis = d3.svg.axis()
                 .scale(x)
@@ -117,9 +118,13 @@ function renderChart(data, expectedNumber, chart) {
   var maxTickWidth = 20;
 
   if (data.length * maxTickWidth > dim.width) {
+    var range = x.range();
+    var left  = range[0];
+    var right = range[range.length-1];
+
     var linearX = d3.scale.linear()
                     .domain([0, data.length])
-                    .range([0, dim.width]);
+                    .range([left, right]);
 
     xAxis.scale(linearX);
   }
@@ -128,8 +133,6 @@ function renderChart(data, expectedNumber, chart) {
                 .scale(y)
                 .ticks(2)
                 .orient("left");
-
-  x.domain(data.map(function(d, i) { return i }));
 
   var svg = initSVG(chart);
 
