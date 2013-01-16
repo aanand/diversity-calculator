@@ -45,7 +45,7 @@ function initCalculator(options) {
 
   function redraw() {
     chart.innerHTML = '';
-    drawChart(data, expectedNumber, chart);
+    renderChart(data, expectedNumber, chart);
   }
 
   function updateNotes() {
@@ -60,7 +60,7 @@ function zeroTimeout(callback) {
   }
 }
 
-function drawChart(data, expectedNumber, chart) {
+function renderChart(data, expectedNumber, chart) {
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
       width = chart.offsetWidth - margin.left - margin.right,
       height = chart.offsetHeight - margin.top - margin.bottom;
