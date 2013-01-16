@@ -114,6 +114,16 @@ function renderChart(data, expectedNumber, chart) {
                 .scale(x)
                 .orient("bottom");
 
+  var maxTickWidth = 20;
+
+  if (data.length * maxTickWidth > dim.width) {
+    var linearX = d3.scale.linear()
+                    .domain([0, data.length])
+                    .range([0, dim.width]);
+
+    xAxis.scale(linearX);
+  }
+
   var yAxis = d3.svg.axis()
                 .scale(y)
                 .ticks(2)
