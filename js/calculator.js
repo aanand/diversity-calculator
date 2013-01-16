@@ -6,21 +6,20 @@ window.calculator = initCalculator({
   notes:                document.querySelector(".notes")
 });
 
-function initCalculator(options) {
-  var groupName = options.groupName;
-  var numSpeakers = options.numSpeakers;
-  var populationPercentage = options.populationPercentage;
-  var chart = options.chart;
-  var notes = options.notes;
-  var expectedNumber = options.expectedNumber = null;
-  var data = options.data = null;
+function initCalculator(self) {
+  var groupName = self.groupName;
+  var numSpeakers = self.numSpeakers;
+  var populationPercentage = self.populationPercentage;
+  var chart = self.chart;
+  var notes = self.notes;
+
   var notesTemplate = Handlebars.compile(document.getElementById("template-notes").innerHTML);
   var chartWidth = chart.offsetWidth;
 
   setupEvents();
   recalculate();
 
-  return options;
+  return self;
 
   function setupEvents() {
     groupName.addEventListener("change", updateNotes, false);
@@ -38,15 +37,15 @@ function initCalculator(options) {
 
     var populationFraction = populationPercentage.valueAsNumber/100;
 
-    expectedNumber = numSpeakers.valueAsNumber * populationFraction;
-    data = poisson(numSpeakers.valueAsNumber, populationFraction);
+    self.expectedNumber = numSpeakers.valueAsNumber * populationFraction;
+    self.data = poisson(numSpeakers.valueAsNumber, populationFraction);
 
     redraw();
     updateNotes();
   }
 
   function redraw() {
-    renderChart(data, expectedNumber, chart);
+    renderChart(self.data, self.expectedNumber, chart);
   }
 
   function resize() {
@@ -57,7 +56,7 @@ function initCalculator(options) {
   }
 
   function updateNotes() {
-    var templateData = getNotesTemplateData(data, expectedNumber);
+    var templateData = getNotesTemplateData(self.data, self.expectedNumber);
     templateData.groupName = groupName.value;
     notes.innerHTML = notesTemplate(templateData);
   }
