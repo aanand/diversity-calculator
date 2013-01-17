@@ -205,16 +205,26 @@ function getNotesData(data, expectedNumber) {
   var under      = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var none       = data[0];
 
-  var showOverVsNone = (none > 0) && (over > 0) && (over/none >= 0.05);
-  var overVsNone     = showOverVsNone && (over/none).toFixed(1);
-
-  return {
+  var notesData = {
     overPercentage:  toPercentage(over),
     underPercentage: toPercentage(under),
-    nonePercentage:  toPercentage(none),
-    showOverVsNone:  showOverVsNone,
-    overVsNone:      overVsNone
+    nonePercentage:  toPercentage(none)
   };
+
+  if (none > 0 && over > 0 && over/none >= 0.05) {
+    notesData.showOverVsNone = true;
+    notesData.overVsNone = toNice(over/none);
+  }
+
+  return notesData;
+}
+
+function toNice(num) {
+  if (num < 10) {
+    return num.toFixed(1);
+  } else {
+    return String(Math.round(num)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 }
 
 function toPercentage(p) {
