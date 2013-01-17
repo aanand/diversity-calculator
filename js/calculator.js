@@ -1,19 +1,16 @@
 window.calculator = initCalculator({
-  groupName:            document.querySelector("input[name=groupName]"),
-  numSpeakers:          document.querySelector("input[name=numSpeakers]"),
-  populationPercentage: document.querySelector("input[name=populationPercentage]"),
-  chart:                document.querySelector(".chart"),
-  notes:                document.querySelector(".notes")
+  chart: document.querySelector(".chart")
 });
 
-function initCalculator(self) {
-  var groupName = self.groupName;
-  var numSpeakers = self.numSpeakers;
-  var populationPercentage = self.populationPercentage;
-  var chart = self.chart;
-  var notes = self.notes;
+ko.applyBindings(calculator);
 
-  var notesTemplate = Handlebars.compile(document.getElementById("template-notes").innerHTML);
+function initCalculator(self) {
+  var groupName = self.groupName = ko.observable("women");
+  var numSpeakers = self.numSpeakers = ko.observable("20");
+  var populationPercentage = self.populationPercentage = ko.observable("10");
+  var notes = self.notes = ko.observable();
+  var chart = self.chart;
+
   var chartWidth = chart.offsetWidth;
 
   setupEvents();
@@ -22,23 +19,19 @@ function initCalculator(self) {
   return self;
 
   function setupEvents() {
-    groupName.addEventListener("change", updateNotes, false);
-    groupName.addEventListener("keydown", zeroTimeout(updateNotes), false);
-    numSpeakers.addEventListener("change", recalculate, false);
-    numSpeakers.addEventListener("keydown", zeroTimeout(recalculate), false);
-    populationPercentage.addEventListener("change", recalculate, false);
-    populationPercentage.addEventListener("keydown", zeroTimeout(recalculate), false);
+    numSpeakers.subscribe(recalculate);
+    populationPercentage.subscribe(recalculate);
     window.addEventListener("resize", resize, false);
   }
 
   function recalculate() {
-    if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
-      return;
+    //if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
+      //return;
 
-    var populationFraction = populationPercentage.valueAsNumber/100;
+    var populationFraction = window.parseInt(populationPercentage())/100;
 
-    self.expectedNumber = numSpeakers.valueAsNumber * populationFraction;
-    self.data = poisson(numSpeakers.valueAsNumber, populationFraction);
+    self.expectedNumber = window.parseInt(numSpeakers()) * populationFraction;
+    self.data = poisson(window.parseInt(numSpeakers()), populationFraction);
 
     redraw();
     updateNotes();
@@ -56,9 +49,7 @@ function initCalculator(self) {
   }
 
   function updateNotes() {
-    var templateData = getNotesTemplateData(self.data, self.expectedNumber);
-    templateData.groupName = groupName.value;
-    notes.innerHTML = notesTemplate(templateData);
+    notes(getNotesData(self.data, self.expectedNumber));
   }
 }
 
@@ -166,7 +157,7 @@ function renderChart(data, expectedNumber, chart) {
      .attr("height", function(d) { return dim.height - y(d) });
 }
 
-function getNotesTemplateData(data, expectedNumber) {
+function getNotesData(data, expectedNumber) {
   var over       = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var under      = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var none       = data[0];

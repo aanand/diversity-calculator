@@ -15,17 +15,30 @@
       <div class="inputs form-inline">
         <p class="lead">
         How many
-        <input type="text" name="groupName" value="women" class="input-small" />
+        <input type="text" data-bind="value: groupName, valueUpdate: 'afterkeydown'" class="input-small" />
         would you expect in a random selection of
-        <input type="number" name="numSpeakers" min="1" max="100" value="20" required="required" class="input-tiny" />
+        <input type="number" data-bind="value: numSpeakers, valueUpdate: 'afterkeydown'" min="1" max="100" required="required" class="input-tiny" />
         people, assuming they constitute
-        <input type="number" name="populationPercentage" min="0" max="100" value="10" step="any" required="required" class="input-tiny" />%
+        <input type="number" data-bind="value: populationPercentage, valueUpdate: 'afterkeydown'" min="0" max="100" step="any" required="required" class="input-tiny" />%
         of available speakers?
         </p>
       </div>
 
       <div class="chart"></div>
-      <div class="well notes"></div>
+
+      <div class="well notes">
+        <p>This selection has:<p>
+
+        <ul>
+          <li>a <span class='probability'><span data-bind="text: notes().overPercentage"></span>%</span> chance of over-representing <span data-bind="text: groupName"/></li>
+          <li>a <span class='probability'><span data-bind="text: notes().underPercentage"></span>%</span> chance of under-representing <span data-bind="text: groupName"/></li>
+          <li>a <span class='probability'><span data-bind="text: notes().nonePercentage"></span>%</span> chance of not representing <span data-bind="text: groupName"/> at all</li>
+        </ul>
+
+        <p data-bind="if: notes().showOverVsNone">
+        Over-representation is therefore about <span class='probability'><span data-bind="text: notes().overVsNone"></span> times</span> as likely as no representation.
+        </p>
+      </div>
 
       <div class="about">
         <h2>What&rsquo;s this about?</h2>
@@ -75,22 +88,8 @@
       </div>
     </div>
 
-    <script type="text/x-handlebars-template" id="template-notes">
-      <p>This selection has:<p>
-
-      <ul>
-        <li>a <span class='probability'>{{overPercentage}}%</span> chance of over-representing {{groupName}}</li>
-        <li>a <span class='probability'>{{underPercentage}}%</span> chance of under-representing {{groupName}}</li>
-        <li>a <span class='probability'>{{nonePercentage}}%</span> chance of not representing {{groupName}} at all</li>
-      </ul>
-
-      {{#showOverVsNone}}
-        <p>Over-representation is therefore about <span class='probability'>{{overVsNone}} times</span> as likely as no representation.</p>
-      {{/showOverVsNone}}
-    </script>
-
     <script src="js/d3.v3.min.js"></script>
-    <script src="js/handlebars.js"></script>
+    <script src="js/knockout.js"></script>
     <script src="js/calculator.js"></script>
   </body>
 </html>
