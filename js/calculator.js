@@ -119,8 +119,10 @@ function initSVG(chart) {
   if (svg.empty()) {
     svg = d3.select(chart)
             .append("svg")
+              .attr("width",  dim.width + dim.margin.left + dim.margin.right)
+              .attr("height", dim.height + dim.margin.top + dim.margin.bottom)
             .append("g")
-            .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
+              .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
 
     svg.append("g")
        .attr("class", "x axis")
@@ -169,9 +171,6 @@ function renderChart(data, expectedNumber, chart) {
                 .orient("left");
 
   var svg = initSVG(chart);
-
-  svg.attr("width",  dim.width + dim.margin.left + dim.margin.right)
-     .attr("height", dim.height + dim.margin.top + dim.margin.bottom);
 
   svg.select(".x.axis").call(xAxis);
   svg.select(".y.axis").call(yAxis);
