@@ -31,9 +31,38 @@
         <p>This selection has:<p>
 
         <ul>
-          <li>a <span class='probability'><span data-bind="text: notes().overPercentage"></span>%</span> chance of over-representing <span data-bind="text: groupName"/></li>
-          <li>a <span class='probability'><span data-bind="text: notes().underPercentage"></span>%</span> chance of under-representing <span data-bind="text: groupName"/></li>
-          <li>a <span class='probability'><span data-bind="text: notes().nonePercentage"></span>%</span> chance of not representing <span data-bind="text: groupName"/> at all</li>
+          <li>
+            a
+            <span class='probability'><span data-bind="text: notes().overPercentage"></span>%</span>
+            chance of
+            <span class="over-representation">
+              over-representing <span data-bind="text: groupName"></span>
+            </span>
+          </li>
+          <li>
+            a
+            <span class='probability'><span data-bind="text: notes().exactPercentage"></span>%</span>
+            chance of
+            <span class="exact-representation">
+              representing <span data-bind="text: groupName"></span> exactly
+            </span>
+          </li>
+          <li>
+            a
+            <span class='probability'><span data-bind="text: notes().underPercentage"></span>%</span>
+            chance of
+            <span class="under-representation">
+              under-representing <span data-bind="text: groupName"></span>
+            </span>
+          </li>
+          <li>
+            a
+            <span class='probability'><span data-bind="text: notes().nonePercentage"></span>%</span>
+            chance of
+            <span class="no-representation">
+              not representing <span data-bind="text: groupName"></span> at all
+            </span>
+          </li>
         </ul>
 
         <p data-bind="if: notes().showOverVsNone">

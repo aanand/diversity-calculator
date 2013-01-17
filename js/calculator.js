@@ -186,8 +186,10 @@ function renderChart(data, expectedNumber, chart) {
   bar.exit().remove();
 
   bar.attr("class", function(d, i) {
-       if (i < expectedNumber) return "bar under-representation";
-       if (i > expectedNumber) return "bar over-representation";
+       if (i === expectedNumber) return "bar exact-representation";
+       if (i === 0)              return "bar no-representation";
+       if (i > expectedNumber)   return "bar over-representation";
+       if (i < expectedNumber)   return "bar under-representation";
        return "bar";
      });
 
@@ -201,11 +203,13 @@ function renderChart(data, expectedNumber, chart) {
 
 function getNotesData(data, expectedNumber) {
   var over       = data.filter(function(p, i) { return i > expectedNumber }).reduce(function(a, b) { return a+b }, 0);
+  var exact      = data.filter(function(p, i) { return i === expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var under      = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var none       = data[0];
 
   var notesData = {
     overPercentage:  toPercentage(over),
+    exactPercentage: toPercentage(exact),
     underPercentage: toPercentage(under),
     nonePercentage:  toPercentage(none)
   };

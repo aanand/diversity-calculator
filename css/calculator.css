@@ -17,17 +17,15 @@
   shape-rendering: crispEdges;
 }
 
-.bar rect {
-  fill: #4cb04c;
-}
+.bar.over-representation  rect { fill: #6060c0; }
+.bar.exact-representation rect { fill: #50b050; }
+.bar.under-representation rect { fill: #e0c040; }
+.bar.no-representation    rect { fill: #b05050; }
 
-.bar.under-representation rect {
-  fill: #ad494a;
-}
-
-.bar.over-representation rect {
-  fill: #5254a3;
-}
+.over-representation  { color: #6060c0; }
+.exact-representation { color: #50b050; }
+.under-representation { color: #e0c040; }
+.no-representation    { color: #b05050; }
 
 .bar text {
   font-size: 11px;
