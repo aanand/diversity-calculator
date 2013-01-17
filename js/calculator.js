@@ -12,7 +12,7 @@ function initCalculator(self) {
   var input = self.input = ko.computed(function() {
     var groupNameVal = String(groupName());
     var numSpeakersVal = window.parseInt(numSpeakers());
-    var populationPercentageVal = window.parseInt(populationPercentage());
+    var populationPercentageVal = window.parseFloat(populationPercentage());
 
     return {
       groupName: groupNameVal,
