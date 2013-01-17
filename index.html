@@ -39,7 +39,7 @@
               over-representing <span data-bind="text: groupName"></span>
             </span>
           </li>
-          <li>
+          <li data-bind="visible: notes().exactPercentage > 0">
             a
             <span class='probability'><span data-bind="text: notes().exactPercentage"></span>%</span>
             chance of
