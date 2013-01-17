@@ -196,16 +196,16 @@ function getNotesData(data, expectedNumber) {
     showOverVsNone:  showOverVsNone,
     overVsNone:      overVsNone
   };
+}
 
-  function toPercentage(p) {
-    var percentage = (p * 100);
+function toPercentage(p) {
+  var percentage = (p * 100);
 
-    if (percentage === 0)   return "0";
-    if (percentage >= 99.5) return percentage.toPrecision(3);
-    if (percentage < 0.01)  return "<0.01";
+  if (percentage === 0)   return "0";
+  if (percentage >= 99.5) return percentage.toPrecision(3);
+  if (percentage < 0.01)  return "<0.01";
 
-    return percentage.toPrecision(2);
-  }
+  return percentage.toPrecision(2);
 }
 
 function poisson(n, p) {
