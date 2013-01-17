@@ -5,14 +5,15 @@ window.calculator = initCalculator({
 ko.applyBindings(calculator);
 
 function initCalculator(self) {
-  var groupName = self.groupName = ko.observable("women");
-  var numSpeakers = self.numSpeakers = ko.observable("20");
-  var populationPercentage = self.populationPercentage = ko.observable("10");
+  var groupName = self.groupName = ko.observable();
+  var numSpeakers = self.numSpeakers = ko.observable();
+  var populationPercentage = self.populationPercentage = ko.observable();
   var notes = self.notes = ko.observable();
   var chart = self.chart;
 
   var chartWidth = chart.offsetWidth;
 
+  populateFromURL();
   setupEvents();
   recalculate();
 
@@ -21,7 +22,13 @@ function initCalculator(self) {
   function setupEvents() {
     numSpeakers.subscribe(recalculate);
     populationPercentage.subscribe(recalculate);
+
+    groupName.subscribe(updateURL);
+    numSpeakers.subscribe(updateURL);
+    populationPercentage.subscribe(updateURL);
+
     window.addEventListener("resize", resize, false);
+    window.addEventListener("popstate", populateFromURL, false);
   }
 
   function recalculate() {
@@ -50,6 +57,23 @@ function initCalculator(self) {
 
   function updateNotes() {
     notes(getNotesData(self.data, self.expectedNumber));
+  }
+
+  function updateURL() {
+    var newSearch = '?groupName=' + encodeURIComponent(groupName())
+                  + '&numSpeakers=' + encodeURIComponent(numSpeakers())
+                  + '&populationPercentage=' + encodeURIComponent(populationPercentage());
+
+    if (window.location.search !== newSearch)
+      window.history.pushState(null, null, window.location.pathname + newSearch);
+  }
+
+  function populateFromURL() {
+    var params = parseUri(window.location.href).queryKey;
+
+    groupName(('groupName' in params) ? window.decodeURIComponent(params.groupName) : "women");
+    numSpeakers(('numSpeakers' in params) ? window.decodeURIComponent(params.numSpeakers) : "20");
+    populationPercentage(('populationPercentage' in params) ? window.decodeURIComponent(params.populationPercentage) : "10");
   }
 }
 
