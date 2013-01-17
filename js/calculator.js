@@ -8,6 +8,27 @@ function initCalculator(self) {
   var groupName = self.groupName = ko.observable();
   var numSpeakers = self.numSpeakers = ko.observable();
   var populationPercentage = self.populationPercentage = ko.observable();
+
+  var input = self.input = ko.computed(function() {
+    var groupNameVal = String(groupName());
+    var numSpeakersVal = window.parseInt(numSpeakers());
+    var populationPercentageVal = window.parseInt(populationPercentage());
+
+    return {
+      groupName: groupNameVal,
+      numSpeakers: numSpeakersVal,
+      populationPercentage: populationPercentageVal,
+
+      valid: (
+        groupNameVal.length     >= 1 &&
+        numSpeakersVal          >= 1 &&
+        numSpeakersVal          <= 100 &&
+        populationPercentageVal >= 0 &&
+        populationPercentageVal <= 100
+      )
+    }
+  }).extend({ throttle: 250 });
+
   var notes = self.notes = ko.observable();
   var chart = self.chart;
 
@@ -20,25 +41,21 @@ function initCalculator(self) {
   return self;
 
   function setupEvents() {
-    numSpeakers.subscribe(recalculate);
-    populationPercentage.subscribe(recalculate);
-
-    groupName.subscribe(updateURL);
-    numSpeakers.subscribe(updateURL);
-    populationPercentage.subscribe(updateURL);
+    input.subscribe(recalculate);
+    input.subscribe(updateURL);
 
     window.addEventListener("resize", resize, false);
     window.addEventListener("popstate", populateFromURL, false);
   }
 
   function recalculate() {
-    //if (!numSpeakers.validity.valid || !populationPercentage.validity.valid)
-      //return;
+    var inputVal = input();
+    if (!inputVal.valid) return;
 
-    var populationFraction = window.parseInt(populationPercentage())/100;
+    var populationFraction = inputVal.populationPercentage/100;
 
-    self.expectedNumber = window.parseInt(numSpeakers()) * populationFraction;
-    self.data = poisson(window.parseInt(numSpeakers()), populationFraction);
+    self.expectedNumber = inputVal.numSpeakers * populationFraction;
+    self.data = poisson(inputVal.numSpeakers, populationFraction);
 
     redraw();
     updateNotes();
@@ -60,6 +77,8 @@ function initCalculator(self) {
   }
 
   function updateURL() {
+    if (!input().valid) return;
+
     var newSearch = '?groupName=' + encodeURIComponent(groupName())
                   + '&numSpeakers=' + encodeURIComponent(numSpeakers())
                   + '&populationPercentage=' + encodeURIComponent(populationPercentage());
