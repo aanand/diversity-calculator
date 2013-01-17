@@ -162,8 +162,8 @@ function getNotesData(data, expectedNumber) {
   var under      = data.filter(function(p, i) { return i < expectedNumber }).reduce(function(a, b) { return a+b }, 0);
   var none       = data[0];
 
-  var showOverVsNone = (none > 0) && (over > 0);
-  var overVsNone     = showOverVsNone && Math.round(over/none);
+  var showOverVsNone = (none > 0) && (over > 0) && (over/none >= 0.05);
+  var overVsNone     = showOverVsNone && (over/none).toFixed(1);
 
   return {
     overPercentage:  toPercentage(over),
