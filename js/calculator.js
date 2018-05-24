@@ -62,7 +62,7 @@ function initCalculator(self) {
   }
 
   function redraw() {
-    renderChart(self.data, self.expectedNumber, chart);
+    renderChart(self.groupName(), self.data, self.expectedNumber, chart);
   }
 
   function resize() {
@@ -135,7 +135,7 @@ function initSVG(chart) {
   return svg;
 }
 
-function renderChart(data, expectedNumber, chart) {
+function renderChart(groupName, data, expectedNumber, chart) {
   var dim = getDimensions(chart);
   var barWidth = dim.width / data.length;
 
@@ -181,7 +181,8 @@ function renderChart(data, expectedNumber, chart) {
     .append("g")
     .append("rect")
       .attr("y", dim.height)
-      .attr("height", 0);
+      .attr("height", 0)
+      .append("title");
 
   bar.exit().remove();
 
@@ -199,6 +200,27 @@ function renderChart(data, expectedNumber, chart) {
    .transition()
      .attr("y", y)
      .attr("height", function(d) { return dim.height - y(d) });
+
+  bar.select("title")
+    .text(function(d, i) {
+      function selection() {
+        if (i == 0) {
+          return 'no';
+        } else if (i == 1) {
+          return 'just 1 or no';
+        } else {
+          return `${i} or fewer`;
+        }
+      }
+      function sumIncluding(to) {
+        if (to == 0) {
+          return data[to];
+        } else {
+          return data[to] + sumIncluding(to - 1);
+        }
+      }
+      return `Assuming a random selection, the chance of selecting ${selection()} ${groupName} is ${toPercentage(sumIncluding(i))}%.`;
+    });
 }
 
 function getNotesData(data, expectedNumber) {
