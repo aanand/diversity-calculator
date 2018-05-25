@@ -209,7 +209,7 @@ function renderChart(groupName, data, expectedNumber, chart) {
         } else if (i == 1) {
           return 'just 1 or no';
         } else {
-          return `${i} or fewer`;
+          return i + ' or fewer';
         }
       }
       function sumIncluding(to) {
@@ -219,7 +219,7 @@ function renderChart(groupName, data, expectedNumber, chart) {
           return data[to] + sumIncluding(to - 1);
         }
       }
-      return `Assuming a random selection, the chance of selecting ${selection()} ${groupName} is ${toPercentage(sumIncluding(i))}%.`;
+      return 'Assuming a random selection, the chance of selecting ' + selection() + ' ' + groupName + ' is ' + toPercentage(sumIncluding(i)) + '%.';
     });
 }
 
