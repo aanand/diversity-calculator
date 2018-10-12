@@ -22,7 +22,7 @@ function initCalculator(self) {
       valid: (
         groupNameVal.length     >= 1 &&
         numSpeakersVal          >= 1 &&
-        numSpeakersVal          <= 100 &&
+        numSpeakersVal          <= 1000 &&
         populationPercentageVal >= 0 &&
         populationPercentageVal <= 100
       )
@@ -55,7 +55,7 @@ function initCalculator(self) {
     var populationFraction = inputVal.populationPercentage/100;
 
     self.expectedNumber = inputVal.numSpeakers * populationFraction;
-    self.data = poisson(inputVal.numSpeakers, populationFraction);
+    self.data = logpoisson(inputVal.numSpeakers, populationFraction);
 
     redraw();
     updateNotes();
@@ -250,9 +250,37 @@ function poisson(n, p) {
   return probabilities;
 }
 
+function logpoisson( n, p ) {
+    var logp = [];
+    
+    for (var i=0; i<=n; i++) {
+	var val = 0.0;
+	val = logfact( n ) -
+	    logfact( n-i) -
+	    logfact( i ) +
+	    i * Math.log(p) +
+	    (n-i) * Math.log(1-p);
+	logp.push(Math.exp(val));
+	
+    }
+    return logp;
+}
+
 function fact(n) {
   if (n < 2) return 1;
   var out = n;
   while (--n) out *= n;
   return out;
+}
+
+function logfact(n) {
+    if (n==0) return 1.0;
+
+    // return the Ramanujan approximation for log(n!)
+    var out = 0;
+    out = n * Math.log( n ) - n +
+	Math.log( n * (1 + 4*n*(1+2*n)))/6.0 +
+	Math.log( Math.PI ) /2.0;
+    return out;
+    
 }
