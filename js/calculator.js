@@ -55,7 +55,7 @@ function initCalculator(self) {
     var populationFraction = inputVal.populationPercentage/100;
 
     self.expectedNumber = inputVal.numSpeakers * populationFraction;
-    self.data = poisson(inputVal.numSpeakers, populationFraction);
+    self.data = binomial(inputVal.numSpeakers, populationFraction);
 
     redraw();
     updateNotes();
@@ -240,7 +240,7 @@ function toPercentage(p) {
   return percentage.toPrecision(2);
 }
 
-function poisson(n, p) {
+function binomial(n, p) {
   var probabilities = [];
 
   for (var i=0; i<=n; i++) {
